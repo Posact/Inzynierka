@@ -1,0 +1,146 @@
+﻿@model Inzynierka.Models.Tenant
+@{
+    ViewData["Title"] = "Dodaj Najemcę";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Dodaj nowego najemcę</h2>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form asp-action="Create" class="card border-0 shadow-sm p-4 bg-light">
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="FirstName" class="form-label fw-bold">Imię</label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="LastName" class="form-label fw-bold">Nazwisko</label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr class="text-muted" />
+
+                <!-- SUWAK OBCOKRAJOWIEC -->
+                <div class="form-check form-switch mb-4 mt-2">
+                    <input class="form-check-input fs-5" type="checkbox" role="switch" asp-for="IsForeigner" id="isForeignerSwitch">
+                    <label class="form-check-label fs-5 ms-2" for="isForeignerSwitch">Obcokrajowiec (brak numeru PESEL)</label>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12 mb-3" id="peselContainer">
+                        <label asp-for="Pesel" class="form-label fw-bold">Numer PESEL</label>
+                        <input asp-for="Pesel" class="form-control" id="peselInput" placeholder="Wpisz 11 cyfr" maxlength="11" />
+                        <span asp-validation-for="Pesel" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="DateOfBirth" class="form-label fw-bold">Data urodzenia</label>
+                        <!-- readonly domyślnie, dopóki nie włączymy obcokrajowca -->
+                        <input asp-for="DateOfBirth" type="date" class="form-control" id="dobInput" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Gender" class="form-label fw-bold">Płeć</label>
+                        <select asp-for="Gender" class="form-select" id="genderInput" disabled>
+                            <option value="">-- Wybierz --</option>
+                            <option value="Mężczyzna">Mężczyzna</option>
+                            <option value="Kobieta">Kobieta</option>
+                        </select>
+                        <!-- Ukryty input, aby zablokowany select wysłał wartość do bazy -->
+                        <input type="hidden" asp-for="Gender" id="genderHidden" />
+                    </div>
+                </div>
+
+                <hr class="text-muted" />
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label fw-bold">Numer telefonu</label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-bold">Adres e-mail</label>
+                        <input asp-for="Email" type="email" class="form-control" />
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save"></i> Zapisz do bazy</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary ms-2">Anuluj</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const isForeignerSwitch = document.getElementById('isForeignerSwitch');
+            const peselContainer = document.getElementById('peselContainer');
+            const peselInput = document.getElementById('peselInput');
+            const dobInput = document.getElementById('dobInput');
+            const genderSelect = document.getElementById('genderInput');
+            const genderHidden = document.getElementById('genderHidden');
+
+            // Funkcja do przełączania trybów
+            function toggleForeignerMode() {
+                if (isForeignerSwitch.checked) {
+                    peselContainer.style.display = 'none';
+                    peselInput.value = '';
+                    dobInput.removeAttribute('readonly');
+                    genderSelect.removeAttribute('disabled');
+                } else {
+                    peselContainer.style.display = 'block';
+                    dobInput.setAttribute('readonly', 'readonly');
+                    genderSelect.setAttribute('disabled', 'disabled');
+                }
+            }
+
+            // Kopiowanie wartości z selecta do ukrytego inputa (disabled select nie wysyła danych)
+            genderSelect.addEventListener('change', function() {
+                genderHidden.value = this.value;
+            });
+
+            // Wywołanie przy starcie
+            toggleForeignerMode();
+
+            // Nasłuchiwanie na kliknięcie suwaka
+            isForeignerSwitch.addEventListener('change', toggleForeignerMode);
+
+            // Magia - dekodowanie PESELU w locie
+            peselInput.addEventListener('input', function () {
+                let p = this.value;
+                if (p.length === 11 && !isForeignerSwitch.checked) {
+
+                    let year = parseInt(p.substring(0, 2));
+                    let month = parseInt(p.substring(2, 4));
+                    let day = parseInt(p.substring(4, 6));
+
+                    // Sprawdzanie stulecia zakodowanego w miesiącu
+                    if (month > 80 && month < 93) { year += 1800; month -= 80; }
+                    else if (month > 0 && month < 13) { year += 1900; }
+                    else if (month > 20 && month < 33) { year += 2000; month -= 20; }
+                    else if (month > 40 && month < 53) { year += 2100; month -= 40; }
+                    else if (month > 60 && month < 73) { year += 2200; month -= 60; }
+
+                    // Formatowanie do YYYY-MM-DD
+                    let mStr = month < 10 ? '0' + month : month;
+                    let dStr = day < 10 ? '0' + day : day;
+                    dobInput.value = `${year}-${mStr}-${dStr}`;
+
+                    // Płeć (10-ta cyfra parzysta to kobieta, nieparzysta to mężczyzna)
+                    let genderDigit = parseInt(p.substring(9, 10));
+                    let gender = (genderDigit % 2 === 0) ? "Kobieta" : "Mężczyzna";
+
+                    genderSelect.value = gender;
+                    genderHidden.value = gender;
+                }
+            });
+        });
+    </script>
+}

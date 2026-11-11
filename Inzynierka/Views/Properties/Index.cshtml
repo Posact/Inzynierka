@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Inzynierka.Models.Property>
+
+@{
+    ViewData["Title"] = "Nieruchomości";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Zarządzanie Nieruchomościami</h2>
+
+    <a asp-action="Create" class="btn btn-success mb-3"><i class="bi bi-plus-circle"></i> Dodaj Nieruchomość</a>
+
+    <table class="table table-hover shadow-sm bg-white rounded text-center align-middle">
+        <thead class="table-light">
+            <tr>
+                <th class="text-start">Nazwa obiektu</th>
+                <th class="text-start">Adres</th>
+                <th>Metraż</th>
+                <th>Pokoje</th>
+                <th>Piętro</th>
+                <th>Balkon</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-start fw-bold">@item.Name</td>
+                        <td class="text-start">@item.Address</td>
+                        <td>@item.Area m²</td>
+                        <td>@item.RoomCount</td>
+                        <td>@(item.Floor.HasValue ? item.Floor.Value.ToString() : "-")</td>
+                        <td>
+                            @if (item.HasBalcony)
+                            {
+                                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                            }
+                            else
+                            {
+
+                                <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary">Edytuj</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-3">Brak nieruchomości w bazie.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <!-- Podpięcie biblioteki SweetAlert2 do animowanych pop-upów -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Sprawdzenie czy kontroler wysłał komunikat o sukcesie -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: 'Sukces!',
+                    text: '@Html.Raw(TempData["SuccessMessage"])',
+                    icon: 'success',
+                    confirmButtonText: 'Super',
+                    confirmButtonColor: '#2c3e50',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+        </script>
+    }
+}

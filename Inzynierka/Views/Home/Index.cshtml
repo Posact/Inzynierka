@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Strona główna";
+}
+
+<style>
+    /* Definicje animacji */
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    /* Klasy przypisane do elementów */
+    .animate-fade-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        opacity: 0;
+    }
+
+    /* Opóźnienia kaskadowe */
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+
+    .floating-icon {
+        animation: float 3s ease-in-out infinite;
+        font-size: 3rem;
+    }
+
+    /* Animacje kart na hover */
+    .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 15px;
+    }
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row align-items-center" style="min-height: 70vh;">
+
+        <!-- Lewa sekcja z tekstem i przyciskami -->
+        <div class="col-lg-6 text-center text-lg-start animate-fade-up">
+            <h1 class="display-4 fw-bold text-primary mb-3">Zarządzaj najmami <br />bez stresu</h1>
+            <p class="lead text-muted mb-4 delay-1 animate-fade-up">
+                Twój nowoczesny panel administracyjny. Kontroluj nieruchomości, umowy, najemców i rozwiązuj usterki w jednym, zintegrowanym środowisku.
+            </p>
+            <div class="delay-2 animate-fade-up">
+                <a asp-controller="Tasks" asp-action="Index" class="btn btn-primary btn-lg px-4 me-md-2 mb-2 shadow">
+                    <i class="bi bi-kanban"></i> Przejdź do Tablicy
+                </a>
+                <a asp-controller="Properties" asp-action="Index" class="btn btn-outline-secondary btn-lg px-4 mb-2 shadow-sm">
+                    <i class="bi bi-building"></i> Obiekty
+                </a>
+            </div>
+        </div>
+
+        <!-- Prawa sekcja z animowanymi kartami -->
+        <div class="col-lg-6 mt-5 mt-lg-0 delay-3 animate-fade-up">
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <div class="card stat-card border-0 shadow-sm h-100 p-4 text-center bg-light">
+                        <i class="bi bi-buildings floating-icon text-primary mb-3"></i>
+                        <h4 class="fw-bold">Nieruchomości</h4>
+                        <p class="text-muted small mb-0">Rejestr i adresy obiektów</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card stat-card border-0 shadow-sm h-100 p-4 text-center bg-light">
+                        <i class="bi bi-people floating-icon text-success mb-3"></i>
+                        <h4 class="fw-bold">Najemcy</h4>
+                        <p class="text-muted small mb-0">Ewidencja najemców</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card stat-card border-0 shadow-sm h-100 p-4 text-center bg-light">
+                        <i class="bi bi-file-earmark-text floating-icon text-info mb-3"></i>
+                        <h4 class="fw-bold">Umowy (Kadry)</h4>
+                        <p class="text-muted small mb-0">Czynsze i okresy najmu</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card stat-card border-0 shadow-sm h-100 p-4 text-center bg-light">
+                        <i class="bi bi-check2-square floating-icon text-warning mb-3"></i>
+                        <h4 class="fw-bold">Usterki</h4>
+                        <p class="text-muted small mb-0">Taski</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

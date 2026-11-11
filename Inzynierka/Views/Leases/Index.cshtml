@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Inzynierka.Models.Lease>
+
+@{
+    ViewData["Title"] = "Umowy Najmu";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Ewidencja Umów Najmu</h2>
+
+    <!-- Przycisk do dodawania-->
+    <a asp-action="Create" class="btn btn-success mb-3"><i class="bi bi-plus-circle"></i> Nowa Umowa</a>
+
+    <table class="table table-hover shadow-sm bg-white rounded">
+        <thead class="table-light">
+            <tr>
+                <th>Najemca</th>
+                <th>Obiekt</th>
+                <th>Czynsz (Miesięcznie)</th>
+                <th>Okres najmu</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <!-- ZMiana tutaj: item.TenantName zastąpione przez relację do bazy -->
+                        <td class="fw-bold">@(item.Tenant?.FullName ?? "Brak")</td>
+                        <td>@(item.Property?.Name ?? "Brak")</td>
+                        <td class="text-success fw-bold">@item.MonthlyRent.ToString("C")</td>
+                        <td>@item.StartDate.ToShortDateString() - @item.EndDate.ToShortDateString()</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary">Szczegóły</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">Brak umów w bazie.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
